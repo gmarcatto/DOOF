@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: doof-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: doof
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - doof-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/doof --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: doof-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      PORT: 5000
+      NODE_ENV: development
+      MONGODB_URI: mongodb://mongodb:27017/doof
+      JWT_SECRET: doof_super_secret_jwt_key_change_in_production
+      FRONTEND_URL: http://localhost:3000
+      GOOGLE_CALLBACK_URL: http://localhost:5000/api/auth/google/callback
+      FACEBOOK_CALLBACK_URL: http://localhost:5000/api/auth/facebook/callback
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - doof-network
+    volumes:
+      - ./backend/src:/app/src
+      - /app/node_modules
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: doof-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - doof-network
+    volumes:
+      - ./frontend/src:/app/src
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+
+networks:
+  doof-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+

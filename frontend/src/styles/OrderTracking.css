@@ -1,0 +1,283 @@
+.order-tracking-page {
+  min-height: calc(100vh - 160px);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.order-header h1 {
+  font-size: 2rem;
+}
+
+.btn-back {
+  padding: 10px 20px;
+  background-color: var(--white);
+  color: var(--dark);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.order-status-banner {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--white);
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow-hover);
+}
+
+.status-icon-large {
+  font-size: 5rem;
+  margin-bottom: 16px;
+}
+
+.order-status-banner h2 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.order-timeline {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  padding: 30px;
+  background-color: var(--white);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  opacity: 0.4;
+}
+
+.timeline-step.completed {
+  opacity: 1;
+}
+
+.timeline-step.active {
+  opacity: 1;
+}
+
+.timeline-step::after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  width: 100%;
+  height: 3px;
+  background-color: var(--border);
+}
+
+.timeline-step:last-child::after {
+  display: none;
+}
+
+.timeline-step.completed::after {
+  background-color: var(--primary-color);
+}
+
+.timeline-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  background-color: var(--white);
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: var(--shadow);
+  z-index: 1;
+}
+
+.timeline-label {
+  font-size: 0.85rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.order-details-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.order-section {
+  background-color: var(--white);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.order-section h3 {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border);
+}
+
+.order-items {
+  margin-bottom: 20px;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.item-quantity {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.order-totals {
+  margin-top: 20px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: var(--gray);
+}
+
+.total-row.total {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--dark);
+  padding-top: 10px;
+  border-top: 2px solid var(--border);
+}
+
+.restaurant-info,
+.delivery-address {
+  margin-bottom: 20px;
+}
+
+.restaurant-info h4 {
+  margin-bottom: 8px;
+}
+
+.delivery-address p {
+  margin-bottom: 4px;
+  color: var(--gray);
+}
+
+.delivery-type {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.pickup-address {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.pickup-address p {
+  margin: 4px 0;
+  color: var(--gray);
+}
+
+.pickup-address p strong {
+  color: var(--dark);
+}
+
+.pickup-instructions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.pickup-instructions p {
+  margin: 4px 0;
+}
+
+.pickup-instructions p strong {
+  color: var(--primary-color);
+}
+
+.order-history {
+  background-color: var(--white);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.history-timeline {
+  margin-top: 20px;
+}
+
+.history-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-icon {
+  font-size: 2rem;
+  min-width: 40px;
+  text-align: center;
+}
+
+.history-content h4 {
+  margin-bottom: 4px;
+}
+
+.history-time {
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+.history-note {
+  color: var(--gray);
+  font-size: 0.95rem;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+@media (max-width: 992px) {
+  .order-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-timeline {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .timeline-step::after {
+    display: none;
+  }
+}
+
+

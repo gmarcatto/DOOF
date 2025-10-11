@@ -1,0 +1,248 @@
+.checkout-page h1 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+
+.checkout-content {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 40px;
+}
+
+.checkout-form {
+  background-color: var(--white);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.checkout-section {
+  margin-bottom: 40px;
+}
+
+.checkout-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.form-group.flex-1 {
+  flex: 1;
+}
+
+.form-group.flex-3 {
+  flex: 3;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.delivery-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.delivery-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--white);
+}
+
+.delivery-option:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.delivery-option.selected {
+  border-color: var(--primary-color);
+  background: #fff5f2;
+}
+
+.delivery-option input[type="radio"] {
+  margin-bottom: 8px;
+  width: auto;
+}
+
+.delivery-option span {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.delivery-option small {
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+.restaurant-address {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.restaurant-address h3 {
+  margin: 0 0 8px 0;
+  color: var(--dark);
+}
+
+.restaurant-address p {
+  margin: 4px 0;
+  color: var(--gray);
+}
+
+.restaurant-address p strong {
+  color: var(--dark);
+}
+
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.payment-option:hover {
+  border-color: var(--primary-color);
+}
+
+.payment-option.selected {
+  border-color: var(--primary-color);
+  background-color: #FFEBEE;
+}
+
+.payment-option input[type="radio"] {
+  width: auto;
+}
+
+.btn-submit-order {
+  width: 100%;
+  padding: 16px;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.btn-submit-order:hover:not(:disabled) {
+  background-color: #c91825;
+  transform: translateY(-2px);
+}
+
+.btn-submit-order:disabled {
+  background-color: var(--gray);
+  cursor: not-allowed;
+}
+
+.order-summary {
+  background-color: var(--white);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  align-self: start;
+  position: sticky;
+  top: 100px;
+}
+
+.order-summary h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.summary-restaurant h3 {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-items {
+  margin-bottom: 20px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.summary-totals {
+  margin-top: 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: var(--gray);
+}
+
+.summary-row.total {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--dark);
+  padding-top: 12px;
+  border-top: 2px solid var(--border);
+  margin-top: 12px;
+}
+
+@media (max-width: 992px) {
+  .checkout-content {
+    grid-template-columns: 1fr;
+  }
+
+  .order-summary {
+    position: static;
+  }
+
+  .delivery-options {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-methods {
+    grid-template-columns: 1fr;
+  }
+}
+
+
