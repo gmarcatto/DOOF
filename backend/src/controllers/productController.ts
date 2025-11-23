@@ -57,19 +57,26 @@ export const createProduct = async (req: AuthRequest, res: Response): Promise<vo
   try {
     const { restaurant: restaurantId } = req.body;
 
-    // Verify restaurant ownership
+    // Restaurant ID is required
+    if (!restaurantId) {
+      res.status(400).json({ error: 'Restaurant ID is required' });
+      return;
+    }
+
+    // Verify restaurant exists
     const restaurant = await Restaurant.findById(restaurantId);
     if (!restaurant) {
       res.status(404).json({ error: 'Restaurant not found' });
       return;
     }
 
-    if (
-      req.user?.role !== 'admin' &&
-      restaurant.owner.toString() !== req.user?._id.toString()
-    ) {
-      res.status(403).json({ error: 'Not authorized' });
-      return;
+    // Check authorization: admin can create products for any restaurant,
+    // non-admin users can only create products for their own restaurants
+    if (req.user?.role !== 'admin') {
+      if (restaurant.owner.toString() !== req.user?._id.toString()) {
+        res.status(403).json({ error: 'Not authorized to create products for this restaurant' });
+        return;
+      }
     }
 
     const product = await Product.create(req.body);

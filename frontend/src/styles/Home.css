@@ -22,6 +22,46 @@
   animation: fadeInUp 0.8s ease;
 }
 
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  animation: fadeInUp 1s ease;
+}
+
+.hero .btn-hero {
+  display: inline-block;
+  padding: 16px 32px;
+  background-color: var(--white);
+  color: var(--primary-color);
+  text-decoration: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hero .btn-hero:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background-color: #f8f8f8;
+}
+
+.hero .btn-addresses {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--white);
+  border: 2px solid var(--white);
+  backdrop-filter: blur(10px);
+}
+
+.hero .btn-addresses:hover {
+  background-color: var(--white);
+  color: var(--primary-color);
+  border-color: var(--white);
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;

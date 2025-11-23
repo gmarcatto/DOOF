@@ -16,6 +16,7 @@ interface AuthContextType {
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
+  loginWithFirebase: (token: string, userData: User) => Promise<void>;
   logout: () => void;
   loading: boolean;
 }
@@ -85,6 +86,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const loginWithFirebase = async (token: string, userData: User) => {
+    try {
+      localStorage.setItem('token', token);
+      setToken(token);
+      setUser(userData);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.error || 'Firebase login failed');
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
@@ -93,7 +105,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, login, register, loginWithFirebase, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

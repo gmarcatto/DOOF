@@ -6,6 +6,7 @@ import PrivateRoute from './components/PrivateRoute';
 // Pages
 import Home from './pages/Home';
 import Login from './pages/Login';
+import LoginOTP from './pages/LoginOTP';
 import Register from './pages/Register';
 import AuthCallback from './pages/AuthCallback';
 import RestaurantList from './pages/RestaurantList';
@@ -16,6 +17,8 @@ import Checkout from './pages/Checkout';
 import OrderTracking from './pages/OrderTracking';
 import MyOrders from './pages/MyOrders';
 import Profile from './pages/Profile';
+import Addresses from './pages/Addresses';
+import Invoice from './pages/Invoice';
 
 // Admin Pages
 import AdminUsers from './pages/admin/AdminUsers';
@@ -32,8 +35,10 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/login/otp" element={<LoginOTP />} />
             <Route path="/register" element={<Register />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/auth/verify-email" element={<LoginOTP />} />
             <Route path="/restaurants" element={<RestaurantList />} />
             <Route path="/restaurants/:id" element={<RestaurantDetail />} />
             <Route path="/products" element={<Products />} />
@@ -72,10 +77,26 @@ function App() {
               }
             />
             <Route
+              path="/orders/:id/invoice"
+              element={
+                <PrivateRoute>
+                  <Invoice />
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/profile"
               element={
                 <PrivateRoute>
                   <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/addresses"
+              element={
+                <PrivateRoute>
+                  <Addresses />
                 </PrivateRoute>
               }
             />

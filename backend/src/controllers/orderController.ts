@@ -13,8 +13,16 @@ export const getAllOrders = async (req: AuthRequest, res: Response): Promise<voi
     // Apply filters based on user role
     if (req.user?.role === 'customer') {
       filter.customer = req.user._id;
-    } else if (req.user?.role === 'restaurant' && restaurant) {
-      filter.restaurant = restaurant;
+    } else if (req.user?.role === 'restaurant') {
+      // Buscar o restaurante do usuário logado
+      const userRestaurant = await Restaurant.findOne({ owner: req.user._id });
+      if (userRestaurant) {
+        filter.restaurant = userRestaurant._id;
+      } else {
+        // Se não encontrar restaurante, retornar array vazio
+        res.json({ orders: [] });
+        return;
+      }
     }
 
     if (status) {
@@ -25,7 +33,7 @@ export const getAllOrders = async (req: AuthRequest, res: Response): Promise<voi
       filter.customer = customer;
     }
 
-    if (restaurant && (req.user?.role === 'admin' || req.user?.role === 'restaurant')) {
+    if (restaurant && req.user?.role === 'admin') {
       filter.restaurant = restaurant;
     }
 
@@ -321,6 +329,95 @@ export const cancelOrder = async (req: AuthRequest, res: Response): Promise<void
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+// Get invoice for order
+export const getInvoice = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate('customer', 'name email phone address')
+      .populate('restaurant', 'name email phone address');
+
+    if (!order) {
+      res.status(404).json({ error: 'Order not found' });
+      return;
+    }
+
+    // Check authorization
+    const customerId = order.customer._id ? order.customer._id.toString() : order.customer.toString();
+    const userId = req.user?._id.toString();
+
+    if (
+      req.user?.role !== 'admin' &&
+      customerId !== userId
+    ) {
+      // Check if user is restaurant owner
+      const restaurantId = order.restaurant._id ? order.restaurant._id.toString() : order.restaurant.toString();
+      const restaurant = await Restaurant.findById(restaurantId);
+      
+      if (
+        !restaurant ||
+        restaurant.owner.toString() !== userId
+      ) {
+        res.status(403).json({ error: 'Not authorized' });
+        return;
+      }
+    }
+
+    // Format payment method label
+    const paymentMethodLabels: Record<string, string> = {
+      credit_card: 'Cartão de Crédito',
+      debit_card: 'Cartão de Débito',
+      cash: 'Dinheiro',
+      pix: 'PIX',
+    };
+
+    // Format invoice data
+    const invoice = {
+      orderNumber: order.orderNumber,
+      orderId: order._id.toString(),
+      orderDate: order.createdAt.toISOString(),
+      orderStatus: order.status,
+      customer: {
+        name: (order.customer as any).name,
+        email: (order.customer as any).email,
+        phone: (order.customer as any).phone || '',
+        cpf: null, // CPF não está no modelo User
+        address: (order.customer as any).address || null,
+      },
+      restaurant: {
+        name: (order.restaurant as any).name,
+        email: (order.restaurant as any).email,
+        phone: (order.restaurant as any).phone,
+        cnpj: null, // CNPJ não está no modelo Restaurant
+        address: (order.restaurant as any).address || null,
+      },
+      items: order.items.map((item) => ({
+        productId: item.product.toString(),
+        name: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        totalPrice: item.price * item.quantity,
+        notes: item.notes || null,
+      })),
+      subtotal: order.subtotal,
+      deliveryFee: order.deliveryFee,
+      discount: 0, // Desconto não está implementado
+      total: order.total,
+      paymentMethod: order.paymentMethod,
+      paymentMethodLabel: paymentMethodLabels[order.paymentMethod] || order.paymentMethod,
+      deliveryType: order.deliveryType,
+      deliveryAddress: order.deliveryAddress || null,
+      pickupAddress: order.pickupAddress || null,
+      estimatedDeliveryTime: order.estimatedDeliveryTime.toISOString(),
+      statusHistory: order.statusHistory,
+    };
+
+    res.json({ invoice });
+  } catch (error: any) {
+    console.error('Error getting invoice:', error);
+    res.status(500).json({ error: error.message || 'Erro ao buscar nota fiscal' });
   }
 };
 

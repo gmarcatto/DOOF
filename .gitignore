@@ -39,6 +39,11 @@ coverage/
 tmp/
 temp/
 
+# Database backups
+backend/database-backup/
+*.backup
+*.dump
+
 
 
 

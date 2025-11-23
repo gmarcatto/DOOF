@@ -138,6 +138,19 @@ const RestaurantDetail: React.FC = () => {
                   <span>•</span>
                   <span>💰 Mín. R$ {restaurant.minimumOrder.toFixed(2)}</span>
                 </div>
+                
+                {restaurant.address && (
+                  <div className="restaurant-address" style={{ marginTop: '15px', fontSize: '0.95rem', color: '#666' }}>
+                    <span>📍 </span>
+                    {restaurant.address.placeName ? (
+                      <span><strong>{restaurant.address.placeName}</strong></span>
+                    ) : (
+                      <span>
+                        {restaurant.address.street}, {restaurant.address.number} - {restaurant.address.neighborhood}, {restaurant.address.city}/{restaurant.address.state}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

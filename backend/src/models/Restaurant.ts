@@ -18,6 +18,7 @@ export interface IRestaurant extends Document {
       latitude: number;
       longitude: number;
     };
+    placeName?: string; // Nome do lugar (ex: "Shopping Center Norte", "Parque Ibirapuera")
   };
   phone: string;
   email: string;
@@ -71,6 +72,7 @@ const RestaurantSchema = new Schema<IRestaurant>(
         latitude: Number,
         longitude: Number,
       },
+      placeName: String, // Nome do lugar obtido via reverse geocoding
     },
     phone: {
       type: String,

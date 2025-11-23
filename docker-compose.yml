@@ -45,7 +45,7 @@ services:
     networks:
       - doof-network
     volumes:
-      - ./backend/src:/app/src
+      - ./backend:/app
       - /app/node_modules
 
   # Frontend React App
@@ -69,11 +69,83 @@ services:
     stdin_open: true
     tty: true
 
+  # Mobile React Native App
+  mobile:
+    build:
+      context: ./mobile
+      dockerfile: Dockerfile
+    container_name: doof-mobile
+    restart: unless-stopped
+    ports:
+      - "19000:19000"  # Expo Dev Server
+      - "19001:19001"  # Expo Dev Tools
+      - "19002:19002"  # Expo Metro Bundler
+    environment:
+      EXPO_PUBLIC_API_URL: http://backend:5000/api
+      NODE_ENV: development
+    depends_on:
+      - backend
+    networks:
+      - doof-network
+    volumes:
+      - ./mobile:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+
+  # Android Emulator com Expo
+  android-emulator:
+    image: budtmo/docker-android:emulator_11.0
+    container_name: doof-android-emulator
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "6080:6080"    # VNC/NoVNC (acesso ao emulador via navegador)
+      - "5554:5554"   # ADB
+      - "5555:5555"   # ADB
+      - "19003:19000" # Expo Dev Server (porta diferente para não conflitar)
+      - "19004:19001" # Expo Dev Tools
+      - "19005:19002" # Metro Bundler
+    environment:
+      EXPO_PUBLIC_API_URL: http://backend:5000/api
+      NODE_ENV: development
+      # Configurações do emulador (a imagem usa essas variáveis)
+      # Deixar vazio para usar o AVD padrão da imagem
+      EMULATOR_DEVICE: ""
+      EMULATOR_OPTIONS: "-no-audio -no-window -gpu swiftshader_indirect"
+    depends_on:
+      - backend
+    networks:
+      - doof-network
+    volumes:
+      - ./mobile:/app
+      - android-emulator-data:/root/.android
+    stdin_open: true
+    tty: true
+    shm_size: 2gb
+
+  # Android Emulator (Customizado)
+  android_emulator:
+    build: ./docker/android-emulator
+    container_name: doof-android-emulator-custom
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "5555:5555"  # ADB
+      - "8554:8554"  # Stream
+    networks:
+      - doof-network
+    stdin_open: true
+    tty: true
+    shm_size: 2gb
+
 networks:
   doof-network:
     driver: bridge
 
 volumes:
   mongodb_data:
+    driver: local
+  android-emulator-data:
     driver: local
 

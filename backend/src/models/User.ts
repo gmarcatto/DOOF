@@ -17,8 +17,9 @@ export interface IUser extends Document {
   };
   role: 'customer' | 'restaurant' | 'admin';
   avatar?: string;
-  authProvider?: 'local' | 'google' | 'facebook';
+  authProvider?: 'local' | 'google' | 'facebook' | 'firebase';
   providerId?: string;
+  firebaseUid?: string;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -67,11 +68,16 @@ const UserSchema = new Schema<IUser>(
     },
     authProvider: {
       type: String,
-      enum: ['local', 'google', 'facebook'],
+      enum: ['local', 'google', 'facebook', 'firebase'],
       default: 'local',
     },
     providerId: {
       type: String,
+    },
+    firebaseUid: {
+      type: String,
+      unique: true,
+      sparse: true, // Permite múltiplos nulls
     },
   },
   {
@@ -81,13 +87,14 @@ const UserSchema = new Schema<IUser>(
 
 // Hash password before saving
 UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password') || !this.password) {
+  const user = this as IUser;
+  if (!user.isModified('password') || !user.password) {
     return next();
   }
 
   try {
     const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    user.password = await bcrypt.hash(user.password, salt);
     next();
   } catch (error: any) {
     next(error);
@@ -98,8 +105,9 @@ UserSchema.pre('save', async function (next) {
 UserSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
-  if (!this.password) return false;
-  return bcrypt.compare(candidatePassword, this.password);
+  const user = this as IUser;
+  if (!user.password) return false;
+  return bcrypt.compare(candidatePassword, user.password);
 };
 
 export default mongoose.model<IUser>('User', UserSchema);

@@ -86,6 +86,17 @@ const Login: React.FC = () => {
               >
                 <span>🔍</span> Entrar com Google
               </button>
+              <button
+                onClick={() => navigate('/login/otp')}
+                className="btn-oauth btn-firebase"
+                style={{
+                  background: '#FF6B35',
+                  color: 'white',
+                  border: 'none',
+                }}
+              >
+                <span>📧</span> Entrar com Email (Firebase)
+              </button>
             </div>
 
             <p className="auth-footer">

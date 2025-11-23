@@ -28,6 +28,7 @@ const Header: React.FC = () => {
           
           {user ? (
             <>
+              <Link to="/addresses" className="nav-link">Meus Endereços</Link>
               <Link to="/orders" className="nav-link">Meus Pedidos</Link>
               <Link to="/cart" className="nav-link cart-link">
                 🛒 Carrinho
@@ -60,6 +61,7 @@ const Header: React.FC = () => {
                 </button>
                 <div className="dropdown-menu">
                   <Link to="/profile">Perfil</Link>
+                  <Link to="/addresses">Meus Endereços</Link>
                   <button onClick={handleLogout}>Sair</button>
                 </div>
               </div>

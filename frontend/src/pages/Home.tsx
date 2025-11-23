@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/Home.css';
 
 const Home: React.FC = () => {
+  const { user } = useAuth();
+
   return (
     <div className="page">
       <Header />
@@ -15,9 +18,16 @@ const Home: React.FC = () => {
             <p className="hero-subtitle">
               A melhor plataforma de delivery de comida. Peça agora e receba em casa!
             </p>
-            <Link to="/restaurants" className="btn-hero">
-              Ver Restaurantes
-            </Link>
+            <div className="hero-buttons">
+              <Link to="/restaurants" className="btn-hero">
+                Ver Restaurantes
+              </Link>
+              {user && (
+                <Link to="/addresses" className="btn-hero btn-addresses">
+                  📍 Meus Endereços
+                </Link>
+              )}
+            </div>
           </div>
         </section>
 

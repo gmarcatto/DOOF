@@ -1,10 +1,11 @@
-import { useState, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, FormEvent } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
+import { addressService, Address } from '../services/addressService';
 import '../styles/Checkout.css';
 
 const Checkout: React.FC = () => {
@@ -14,14 +15,18 @@ const Checkout: React.FC = () => {
 
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery');
   
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [useManualAddress, setUseManualAddress] = useState(false);
+  
   const [address, setAddress] = useState({
-    street: user?.address?.street || '',
-    number: user?.address?.number || '',
-    complement: user?.address?.complement || '',
-    neighborhood: user?.address?.neighborhood || '',
-    city: user?.address?.city || '',
-    state: user?.address?.state || '',
-    zipCode: user?.address?.zipCode || '',
+    street: '',
+    number: '',
+    complement: '',
+    neighborhood: '',
+    city: '',
+    state: '',
+    zipCode: '',
   });
 
   const [pickupAddress, setPickupAddress] = useState({
@@ -32,6 +37,112 @@ const Checkout: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<'credit_card' | 'debit_card' | 'cash' | 'pix'>('credit_card');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [restaurantDetails, setRestaurantDetails] = useState<any>(null);
+
+  // Buscar dados completos do restaurante
+  useEffect(() => {
+    const fetchRestaurantDetails = async () => {
+      if (restaurant?.id) {
+        try {
+          const response = await axios.get(`/api/restaurants/${restaurant.id}`);
+          setRestaurantDetails(response.data.restaurant);
+        } catch (error) {
+          console.error('Erro ao buscar detalhes do restaurante:', error);
+        }
+      }
+    };
+
+    fetchRestaurantDetails();
+  }, [restaurant?.id]);
+
+  // Carregar endereços salvos
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const addresses = await addressService.getAll();
+        setSavedAddresses(addresses);
+        
+        // Selecionar o endereço marcado como selected por padrão
+        const selectedAddress = addresses.find(addr => addr.selected);
+        if (selectedAddress) {
+          setSelectedAddressId(selectedAddress._id);
+          setAddress({
+            street: selectedAddress.rua,
+            number: selectedAddress.numero,
+            complement: selectedAddress.complemento || '',
+            neighborhood: selectedAddress.bairro,
+            city: selectedAddress.cidade,
+            state: selectedAddress.estado,
+            zipCode: '',
+          });
+        } else if (addresses.length > 0) {
+          // Se não houver selecionado, usar o primeiro
+          const firstAddress = addresses[0];
+          setSelectedAddressId(firstAddress._id);
+          setAddress({
+            street: firstAddress.rua,
+            number: firstAddress.numero,
+            complement: firstAddress.complemento || '',
+            neighborhood: firstAddress.bairro,
+            city: firstAddress.cidade,
+            state: firstAddress.estado,
+            zipCode: '',
+          });
+        } else {
+          // Se não houver endereços salvos, usar endereço do perfil ou permitir manual
+          if (user?.address) {
+            setAddress({
+              street: user.address.street || '',
+              number: user.address.number || '',
+              complement: user.address.complement || '',
+              neighborhood: user.address.neighborhood || '',
+              city: user.address.city || '',
+              state: user.address.state || '',
+              zipCode: user.address.zipCode || '',
+            });
+          }
+          setUseManualAddress(true);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar endereços:', error);
+        // Fallback para endereço do perfil
+        if (user?.address) {
+          setAddress({
+            street: user.address.street || '',
+            number: user.address.number || '',
+            complement: user.address.complement || '',
+            neighborhood: user.address.neighborhood || '',
+            city: user.address.city || '',
+            state: user.address.state || '',
+            zipCode: user.address.zipCode || '',
+          });
+        }
+        setUseManualAddress(true);
+      }
+    };
+
+    if (deliveryType === 'delivery') {
+      fetchAddresses();
+    }
+  }, [deliveryType, user]);
+
+  // Atualizar endereço quando selecionar um endereço salvo
+  const handleSelectSavedAddress = (addressId: string) => {
+    const selectedAddress = savedAddresses.find(addr => addr._id === addressId);
+    if (selectedAddress) {
+      setSelectedAddressId(addressId);
+      setUseManualAddress(false);
+      setAddress({
+        street: selectedAddress.rua,
+        number: selectedAddress.numero,
+        complement: selectedAddress.complemento || '',
+        neighborhood: selectedAddress.bairro,
+        city: selectedAddress.cidade,
+        state: selectedAddress.estado,
+        zipCode: '',
+      });
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -50,7 +161,13 @@ const Checkout: React.FC = () => {
         deliveryAddress: deliveryType === 'delivery' ? address : undefined,
         pickupAddress: deliveryType === 'pickup' ? {
           ...pickupAddress,
-          restaurantAddress: `${restaurant?.name} - ${restaurant?.address || 'Endereço do restaurante'}`
+          restaurantAddress: restaurantDetails?.address 
+            ? (restaurantDetails.address.placeName 
+                ? `${restaurant?.name} - ${restaurantDetails.address.placeName}`
+                : restaurantDetails.address.street && restaurantDetails.address.number
+                ? `${restaurant?.name} - ${restaurantDetails.address.street}, ${restaurantDetails.address.number} - ${restaurantDetails.address.neighborhood}, ${restaurantDetails.address.city}/${restaurantDetails.address.state}`
+                : `${restaurant?.name} - Endereço não disponível`)
+            : `${restaurant?.name} - Endereço do restaurante`
         } : undefined,
         paymentMethod,
       };
@@ -59,7 +176,8 @@ const Checkout: React.FC = () => {
       const orderId = response.data.order._id;
 
       clearCart();
-      navigate(`/orders/${orderId}`);
+      // Redirecionar para a nota fiscal após criar o pedido
+      navigate(`/orders/${orderId}/invoice`);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Erro ao criar pedido');
     } finally {
@@ -115,88 +233,276 @@ const Checkout: React.FC = () => {
               {deliveryType === 'delivery' && (
                 <section className="checkout-section">
                   <h2>Endereço de Entrega</h2>
-                
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>CEP</label>
-                    <input
-                      type="text"
-                      value={address.zipCode}
-                      onChange={(e) => setAddress({ ...address, zipCode: e.target.value })}
-                      required
-                      placeholder="00000-000"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group flex-3">
-                    <label>Rua</label>
-                    <input
-                      type="text"
-                      value={address.street}
-                      onChange={(e) => setAddress({ ...address, street: e.target.value })}
-                      required
-                    />
-                  </div>
                   
-                  <div className="form-group flex-1">
-                    <label>Número</label>
-                    <input
-                      type="text"
-                      value={address.number}
-                      onChange={(e) => setAddress({ ...address, number: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
+                  {savedAddresses.length > 0 && !useManualAddress && (
+                    <div className="saved-addresses">
+                      <label style={{ display: 'block', marginBottom: '10px', fontWeight: '600' }}>
+                        Selecione um endereço salvo:
+                      </label>
+                      <div className="address-options" style={{ marginBottom: '20px' }}>
+                        {savedAddresses.map((savedAddr) => (
+                          <label
+                            key={savedAddr._id}
+                            className={`address-option ${selectedAddressId === savedAddr._id ? 'selected' : ''}`}
+                            style={{
+                              display: 'block',
+                              padding: '15px',
+                              marginBottom: '10px',
+                              border: selectedAddressId === savedAddr._id ? '2px solid #e63946' : '2px solid #ddd',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              backgroundColor: selectedAddressId === savedAddr._id ? '#fff5f5' : '#fff',
+                            }}
+                          >
+                            <input
+                              type="radio"
+                              name="savedAddress"
+                              value={savedAddr._id}
+                              checked={selectedAddressId === savedAddr._id}
+                              onChange={() => handleSelectSavedAddress(savedAddr._id)}
+                              style={{ marginRight: '10px' }}
+                            />
+                            <div>
+                              <strong>{savedAddr.rua}, {savedAddr.numero}</strong>
+                              {savedAddr.complemento && <span> - {savedAddr.complemento}</span>}
+                              <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+                                {savedAddr.bairro} - {savedAddr.cidade}/{savedAddr.estado}
+                              </div>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUseManualAddress(true);
+                          setSelectedAddressId(null);
+                        }}
+                        style={{
+                          background: 'none',
+                          border: '1px solid #e63946',
+                          color: '#e63946',
+                          padding: '10px 20px',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          marginBottom: '20px',
+                        }}
+                      >
+                        + Usar outro endereço
+                      </button>
+                      <div style={{ marginBottom: '20px' }}>
+                        <Link
+                          to="/addresses"
+                          style={{
+                            color: '#e63946',
+                            textDecoration: 'none',
+                            fontSize: '0.9rem',
+                          }}
+                        >
+                          📍 Gerenciar meus endereços
+                        </Link>
+                      </div>
+                    </div>
+                  )}
 
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Complemento</label>
-                    <input
-                      type="text"
-                      value={address.complement}
-                      onChange={(e) => setAddress({ ...address, complement: e.target.value })}
-                      placeholder="Apto, bloco, etc"
-                    />
-                  </div>
-                </div>
+                  {useManualAddress && (
+                    <div>
+                      {savedAddresses.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUseManualAddress(false);
+                            if (savedAddresses.length > 0) {
+                              handleSelectSavedAddress(savedAddresses[0]._id);
+                            }
+                          }}
+                          style={{
+                            background: 'none',
+                            border: '1px solid #e63946',
+                            color: '#e63946',
+                            padding: '10px 20px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            marginBottom: '20px',
+                          }}
+                        >
+                          ← Voltar para endereços salvos
+                        </button>
+                      )}
+                      
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>CEP</label>
+                          <input
+                            type="text"
+                            value={address.zipCode}
+                            onChange={(e) => setAddress({ ...address, zipCode: e.target.value })}
+                            placeholder="00000-000"
+                          />
+                        </div>
+                      </div>
 
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Bairro</label>
-                    <input
-                      type="text"
-                      value={address.neighborhood}
-                      onChange={(e) => setAddress({ ...address, neighborhood: e.target.value })}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Cidade</label>
-                    <input
-                      type="text"
-                      value={address.city}
-                      onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Estado</label>
-                    <input
-                      type="text"
-                      value={address.state}
-                      onChange={(e) => setAddress({ ...address, state: e.target.value })}
-                      required
-                      maxLength={2}
-                      placeholder="UF"
-                    />
-                  </div>
-                </div>
-              </section>
+                      <div className="form-row">
+                        <div className="form-group flex-3">
+                          <label>Rua</label>
+                          <input
+                            type="text"
+                            value={address.street}
+                            onChange={(e) => setAddress({ ...address, street: e.target.value })}
+                            required
+                          />
+                        </div>
+                        
+                        <div className="form-group flex-1">
+                          <label>Número</label>
+                          <input
+                            type="text"
+                            value={address.number}
+                            onChange={(e) => setAddress({ ...address, number: e.target.value })}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Complemento</label>
+                          <input
+                            type="text"
+                            value={address.complement}
+                            onChange={(e) => setAddress({ ...address, complement: e.target.value })}
+                            placeholder="Apto, bloco, etc"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Bairro</label>
+                          <input
+                            type="text"
+                            value={address.neighborhood}
+                            onChange={(e) => setAddress({ ...address, neighborhood: e.target.value })}
+                            required
+                          />
+                        </div>
+                        
+                        <div className="form-group">
+                          <label>Cidade</label>
+                          <input
+                            type="text"
+                            value={address.city}
+                            onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                            required
+                          />
+                        </div>
+                        
+                        <div className="form-group">
+                          <label>Estado</label>
+                          <input
+                            type="text"
+                            value={address.state}
+                            onChange={(e) => setAddress({ ...address, state: e.target.value })}
+                            required
+                            maxLength={2}
+                            placeholder="UF"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {savedAddresses.length === 0 && (
+                    <div>
+                      <p style={{ marginBottom: '15px', color: '#666' }}>
+                        Você ainda não tem endereços salvos.{' '}
+                        <Link to="/addresses" style={{ color: '#e63946', textDecoration: 'none' }}>
+                          Cadastrar endereço
+                        </Link>
+                      </p>
+                      
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>CEP</label>
+                          <input
+                            type="text"
+                            value={address.zipCode}
+                            onChange={(e) => setAddress({ ...address, zipCode: e.target.value })}
+                            placeholder="00000-000"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group flex-3">
+                          <label>Rua</label>
+                          <input
+                            type="text"
+                            value={address.street}
+                            onChange={(e) => setAddress({ ...address, street: e.target.value })}
+                            required
+                          />
+                        </div>
+                        
+                        <div className="form-group flex-1">
+                          <label>Número</label>
+                          <input
+                            type="text"
+                            value={address.number}
+                            onChange={(e) => setAddress({ ...address, number: e.target.value })}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Complemento</label>
+                          <input
+                            type="text"
+                            value={address.complement}
+                            onChange={(e) => setAddress({ ...address, complement: e.target.value })}
+                            placeholder="Apto, bloco, etc"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Bairro</label>
+                          <input
+                            type="text"
+                            value={address.neighborhood}
+                            onChange={(e) => setAddress({ ...address, neighborhood: e.target.value })}
+                            required
+                          />
+                        </div>
+                        
+                        <div className="form-group">
+                          <label>Cidade</label>
+                          <input
+                            type="text"
+                            value={address.city}
+                            onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                            required
+                          />
+                        </div>
+                        
+                        <div className="form-group">
+                          <label>Estado</label>
+                          <input
+                            type="text"
+                            value={address.state}
+                            onChange={(e) => setAddress({ ...address, state: e.target.value })}
+                            required
+                            maxLength={2}
+                            placeholder="UF"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </section>
               )}
 
               {deliveryType === 'pickup' && (
@@ -206,7 +512,17 @@ const Checkout: React.FC = () => {
                   <div className="restaurant-address">
                     <h3>📍 Endereço do Restaurante</h3>
                     <p><strong>{restaurant?.name}</strong></p>
-                    <p>{restaurant?.address || 'Endereço do restaurante'}</p>
+                    {restaurantDetails?.address ? (
+                      <p>
+                        {restaurantDetails.address.placeName 
+                          ? restaurantDetails.address.placeName
+                          : restaurantDetails.address.street && restaurantDetails.address.number
+                          ? `${restaurantDetails.address.street}, ${restaurantDetails.address.number} - ${restaurantDetails.address.neighborhood}, ${restaurantDetails.address.city}/${restaurantDetails.address.state}`
+                          : 'Endereço não disponível'}
+                      </p>
+                    ) : (
+                      <p>Carregando endereço...</p>
+                    )}
                   </div>
                   
                   <div className="form-group">

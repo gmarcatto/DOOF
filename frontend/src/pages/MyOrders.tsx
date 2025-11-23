@@ -125,35 +125,54 @@ const MyOrders: React.FC = () => {
           ) : (
             <div className="orders-list">
               {orders.map((order) => (
-                <Link key={order._id} to={`/orders/${order._id}`} className="order-card">
-                  <div className="order-card-header">
-                    <div>
-                      <h3>{order.restaurant.name}</h3>
-                      <p className="order-number">Pedido {order.orderNumber}</p>
-                    </div>
-                    <span className={`order-status ${getStatusClass(order.status)}`}>
-                      {getStatusLabel(order.status)}
-                    </span>
-                  </div>
-
-                  <div className="order-card-items">
-                    {order.items.slice(0, 3).map((item: any, index: number) => (
-                      <span key={index}>
-                        {item.quantity}x {item.name}
-                        {index < Math.min(order.items.length, 3) - 1 && ', '}
+                <div key={order._id} className="order-card">
+                  <Link to={`/orders/${order._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <div className="order-card-header">
+                      <div>
+                        <h3>{order.restaurant.name}</h3>
+                        <p className="order-number">Pedido {order.orderNumber}</p>
+                      </div>
+                      <span className={`order-status ${getStatusClass(order.status)}`}>
+                        {getStatusLabel(order.status)}
                       </span>
-                    ))}
-                    {order.items.length > 3 && ` +${order.items.length - 3} itens`}
-                  </div>
+                    </div>
 
-                  <div className="order-card-footer">
-                    <span className="order-date">
-                      {new Date(order.createdAt).toLocaleDateString('pt-BR')} às{' '}
-                      {new Date(order.createdAt).toLocaleTimeString('pt-BR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
+                    <div className="order-card-items">
+                      {order.items.slice(0, 3).map((item: any, index: number) => (
+                        <span key={index}>
+                          {item.quantity}x {item.name}
+                          {index < Math.min(order.items.length, 3) - 1 && ', '}
+                        </span>
+                      ))}
+                      {order.items.length > 3 && ` +${order.items.length - 3} itens`}
+                    </div>
+                  </Link>
+
+                  <div className="order-card-footer" style={{ display: 'flex', gap: '1rem', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <Link 
+                        to={`/orders/${order._id}/invoice`}
+                        className="btn-invoice-small"
+                        style={{
+                          background: '#28a745',
+                          color: 'white',
+                          textDecoration: 'none',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '6px',
+                          fontSize: '0.9rem',
+                          fontWeight: 600,
+                        }}
+                      >
+                        📄 NF
+                      </Link>
+                      <span className="order-date">
+                        {new Date(order.createdAt).toLocaleDateString('pt-BR')} às{' '}
+                        {new Date(order.createdAt).toLocaleTimeString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
                     <div className="order-footer-right">
                       <span className="order-total">R$ {order.total.toFixed(2)}</span>
                       {canCancelOrder(order.status) && (
@@ -167,7 +186,7 @@ const MyOrders: React.FC = () => {
                       )}
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           )}

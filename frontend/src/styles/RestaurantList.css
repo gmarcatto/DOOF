@@ -42,6 +42,16 @@
   color: var(--white);
 }
 
+.category-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.category-btn:disabled:hover {
+  border-color: var(--border);
+  color: var(--dark);
+}
+
 .restaurant-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -109,6 +119,50 @@
 .rating {
   color: var(--secondary-color);
   font-weight: 600;
+}
+
+.distance {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.restaurant-card-wrapper {
+  position: relative;
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.favorite-btn:active {
+  transform: scale(0.95);
+}
+
+.favorite-btn span {
+  font-size: 24px;
+  transition: all 0.3s ease;
+  display: block;
+  line-height: 1;
 }
 
 .restaurant-categories {

@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import Restaurant from '../models/Restaurant';
 import { AuthRequest } from '../middleware/auth';
+import { updateRestaurantPlaceName } from '../services/geocodingService';
 
 // Get all restaurants
 export const getAllRestaurants = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -125,6 +126,64 @@ export const deleteRestaurant = async (req: AuthRequest, res: Response): Promise
 
     res.json({ message: 'Restaurant deleted successfully' });
   } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Update restaurant place name using reverse geocoding
+export const updateRestaurantPlaceNameController = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id);
+
+    if (!restaurant) {
+      res.status(404).json({ error: 'Restaurant not found' });
+      return;
+    }
+
+    // Check authorization
+    if (
+      req.user?.role !== 'admin' &&
+      restaurant.owner.toString() !== req.user?._id.toString()
+    ) {
+      res.status(403).json({ error: 'Not authorized' });
+      return;
+    }
+
+    // Verificar se tem coordenadas
+    if (
+      !restaurant.address?.coordinates?.latitude ||
+      !restaurant.address?.coordinates?.longitude
+    ) {
+      res.status(400).json({
+        error: 'Restaurant does not have coordinates',
+      });
+      return;
+    }
+
+    // Obter nome do lugar via reverse geocoding
+    const placeName = await updateRestaurantPlaceName(restaurant);
+
+    if (!placeName) {
+      res.status(404).json({
+        error: 'Could not find place name for these coordinates',
+      });
+      return;
+    }
+
+    // Atualizar restaurante
+    restaurant.address.placeName = placeName;
+    await restaurant.save();
+
+    res.json({
+      message: 'Place name updated successfully',
+      restaurant,
+      placeName,
+    });
+  } catch (error: any) {
+    console.error('Error updating place name:', error);
     res.status(500).json({ error: error.message });
   }
 };

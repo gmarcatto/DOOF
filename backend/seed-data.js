@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 // Conectar ao MongoDB
-mongoose.connect('mongodb://localhost:27017/doof')
+const mongoUri = process.env.MONGODB_URI || 'mongodb://mongodb:27017/doof';
+mongoose.connect(mongoUri)
   .then(async () => {
     console.log('✅ Conectado ao MongoDB');
     

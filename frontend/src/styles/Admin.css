@@ -241,6 +241,34 @@
   background-color: var(--dark);
 }
 
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--gray);
+  padding: 4px 8px;
+  line-height: 1;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  color: var(--dark);
+  transform: rotate(90deg);
+}
+
 @media (max-width: 768px) {
   .admin-table-container {
     overflow-x: scroll;

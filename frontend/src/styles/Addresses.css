@@ -1,0 +1,404 @@
+.addresses-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: calc(100vh - 200px);
+}
+
+.addresses-header {
+  margin-bottom: 24px;
+}
+
+.addresses-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+/* Search Bar */
+.search-container {
+  margin-bottom: 16px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #f9f9f9;
+  transition: all 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #ea1d2c;
+  background: white;
+}
+
+/* Use Location Button */
+.use-location-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.use-location-btn:hover {
+  border-color: #ea1d2c;
+  box-shadow: 0 2px 8px rgba(234, 29, 44, 0.1);
+}
+
+.gps-icon {
+  font-size: 24px;
+}
+
+.location-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.location-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.location-address {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Error Alert */
+.error-alert {
+  background: #fee;
+  color: #c33;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-alert button {
+  background: none;
+  border: none;
+  color: #c33;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+}
+
+/* Addresses List */
+.addresses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.address-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.address-item:hover {
+  border-color: #ea1d2c;
+  box-shadow: 0 2px 8px rgba(234, 29, 44, 0.1);
+}
+
+.address-item.selected {
+  border-color: #ea1d2c;
+  background: #fff5f5;
+}
+
+.address-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.address-main {
+  flex: 1;
+}
+
+.address-street {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.address-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  color: #666;
+}
+
+.address-neighborhood {
+  color: #666;
+}
+
+.address-city {
+  color: #666;
+}
+
+.address-complement {
+  color: #999;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.selected-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #ea1d2c;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.check-icon {
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.options-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.options-btn:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+/* Bottom Sheet Options */
+.bottom-sheet-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.bottom-sheet-option:first-child {
+  border-radius: 12px 12px 0 0;
+}
+
+.bottom-sheet-option:last-child {
+  border-bottom: none;
+  border-radius: 0 0 12px 12px;
+}
+
+.bottom-sheet-option:hover {
+  background: #f9f9f9;
+}
+
+.bottom-sheet-option.delete {
+  color: #ea1d2c;
+}
+
+.bottom-sheet-option.edit {
+  color: #333;
+}
+
+.bottom-sheet-option.cancel {
+  color: #ea1d2c;
+  font-weight: 600;
+  margin-top: 8px;
+  border-top: 1px solid #e0e0e0;
+  border-radius: 12px;
+}
+
+.option-icon {
+  font-size: 20px;
+}
+
+/* Add Address Button */
+.add-address-btn {
+  width: 100%;
+  padding: 16px;
+  background: #ea1d2c;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 24px;
+}
+
+.add-address-btn:hover {
+  background: #d01a28;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(234, 29, 44, 0.3);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 16px;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 16px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .addresses-container {
+    padding: 16px;
+  }
+
+  .addresses-header h1 {
+    font-size: 20px;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    max-height: 95vh;
+  }
+}
+
+
+
+

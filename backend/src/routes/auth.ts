@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { register, login, getProfile, oauthCallback } from '../controllers/authController';
+import { register, login, getProfile, oauthCallback, firebaseAuth } from '../controllers/authController';
 import { authenticate } from '../middleware/auth';
 
 const router = Router();
@@ -9,6 +9,9 @@ const router = Router();
 router.post('/register', register);
 router.post('/login', login);
 router.get('/profile', authenticate, getProfile);
+
+// Firebase authentication
+router.post('/firebase', firebaseAuth);
 
 // Google OAuth
 router.get(

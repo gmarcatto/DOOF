@@ -133,7 +133,20 @@ const OrderTracking: React.FC = () => {
         <div className="container">
           <div className="order-header">
             <h1>Pedido {order.orderNumber}</h1>
-            <Link to="/orders" className="btn-back">← Voltar</Link>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <Link to={`/orders/${id}/invoice`} className="btn-invoice" style={{
+                background: '#28a745',
+                color: 'white',
+                textDecoration: 'none',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '8px',
+                fontWeight: 600,
+                transition: 'background 0.3s ease',
+              }}>
+                📄 Ver Nota Fiscal
+              </Link>
+              <Link to="/orders" className="btn-back">← Voltar</Link>
+            </div>
           </div>
 
           <div className="order-status-banner">

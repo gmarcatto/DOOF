@@ -13,6 +13,9 @@ import userRoutes from './routes/users';
 import restaurantRoutes from './routes/restaurants';
 import productRoutes from './routes/products';
 import orderRoutes from './routes/orders';
+import locationRoutes from './routes/location';
+import addressRoutes from './routes/addresses';
+import favoriteRoutes from './routes/favorites';
 
 // Load environment variables
 dotenv.config();
@@ -83,6 +86,9 @@ app.get('/', (req, res) => {
       restaurants: '/api/restaurants',
       products: '/api/products',
       orders: '/api/orders',
+      location: '/api/location',
+      addresses: '/api/addresses',
+      favorites: '/api/favorites',
     },
   });
 });
@@ -92,6 +98,9 @@ app.use('/api/users', userRoutes);
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/location', locationRoutes);
+app.use('/api/addresses', addressRoutes);
+app.use('/api/favorites', favoriteRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
